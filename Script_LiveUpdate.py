@@ -1,8 +1,6 @@
 import json, requests, re, time
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver import ActionChains
-
+from ExceptionBreak import ExceptionBreak
 from IPhone11 import IPhone11
 from IPhone12pro import IPhone12pro
 from IPhone12mini import IPhone12mini
@@ -13,33 +11,30 @@ from IPhone11pro import IPhone11pro
 
 
 def Update():
-    while True:
-        try:
-            iphone11 = IPhone11()
-            iphone12pro = IPhone12pro()
-            iphone12mini = IPhone12mini()
-            iphone11proMax = IPhone11proMax()
-            iphone12 = IPhone12()
-            iphone12proMax = IPhone12proMax()
-            iphone11pro = IPhone11pro()
+    iphone11 = IPhone11()
+    iphone12pro = IPhone12pro()
+    iphone12mini = IPhone12mini()
+    iphone11proMax = IPhone11proMax()
+    iphone12 = IPhone12()
+    iphone12proMax = IPhone12proMax()
+    iphone11pro = IPhone11pro()
 
-            data1 = iphone11.getData_BrandNew() + iphone11.getData_Renewed()
-            data2 = iphone12pro.getData_BrandNew()
-            data3 = iphone12mini.getData_BrandNew()
-            data4 = iphone11proMax.getData_BrandNew() + iphone11proMax.getData_Renewed()
-            data5 = iphone12.getData_BrandNew()
-            data6 = iphone12proMax.getData_BrandNew()
-            data7 = iphone11pro.getData_BrandNew() + iphone11pro.getData_Renewed()
+    data1 = iphone11.getData_BrandNew() + iphone11.getData_Renewed()
+    data2 = iphone12pro.getData_BrandNew()
+    data3 = iphone12mini.getData_BrandNew()
+    data4 = iphone11proMax.getData_BrandNew() + iphone11proMax.getData_Renewed()
+    data5 = iphone12.getData_BrandNew()
+    data6 = iphone12proMax.getData_BrandNew()
+    data7 = iphone11pro.getData_BrandNew() + iphone11pro.getData_Renewed()
 
-            data = data1 + data2 + data3 + data4 + data5 + data6 + data7
-            with open("config.txt") as file:
-                path = file.readlines()[0]
-            with open(path, "w") as write_file:
-                 json.dump(data, write_file)
-            time.sleep(86400)
-        except:
-            print("Unknown error")
-            break
+    data = data1 + data2 + data3 + data4 + data5 + data6 + data7
+    with open("config.txt") as file:
+        path = file.readlines()[0]
+    with open(path, "w") as write_file:
+        json.dump(data, write_file)
+
+
+
 
 def SellMyMobile_Price_Json():
     url = {
@@ -52,25 +47,25 @@ def SellMyMobile_Price_Json():
         'Iphone12proMax':'https://www.sellmymobile.com/phones/apple/iphone-12-pro-max-128gb/',
 
     }
-    while True:
-        try:
-            data = {}
-            for key in url:
-                capacities = returnGb(url[key])
-                condition = {'good': {}}
-                data_capacity = {}
-                for capacity in capacities:
-                    currentUrl = url[key].replace(re.search(r"\d+gb", url[key]).group(), capacity)
-                    price = getPrice(currentUrl)
-                    data_capacity[capacity] = price
-                condition['good'] = data_capacity
-                data[key] = condition
-            data
-            with open("SellMyMobile.json", "w") as file:
-                json.dump(data, file)
-        except:
-            print("SellMyMpbile except")
-            break
+    try:
+        data = {}
+        for key in url:
+            capacities = returnGb(url[key])
+            condition = {'good': {}}
+            data_capacity = {}
+            for capacity in capacities:
+                currentUrl = url[key].replace(re.search(r"\d+gb", url[key]).group(), capacity)
+                price = getPrice(currentUrl)
+                data_capacity[capacity] = price
+            condition['good'] = data_capacity
+            data[key] = condition
+
+        with open("SellMyMobile.json", "w") as file:
+            json.dump(data, file)
+    except:
+        raise ExceptionBreak("Error in SellMyMobile")
+
+
 
 
 
@@ -80,11 +75,7 @@ def returnGb(url):
     return [n.text.replace('\n','').lower() for n in soup.find_all('li',class_ = 'device-to-results__variant')]
 
 def getPrice(url):
-    try:
-        r = requests.get(url).text
-        soup = BeautifulSoup(r, 'html.parser')
-        return float(soup.find('span', class_='device-results-table__deal-price').text[1:])
-    except:
-        print("SellMyMobile is except")
-        return
+    r = requests.get(url).text
+    soup = BeautifulSoup(r, 'html.parser')
+    return float(soup.find('span', class_='device-results-table__deal-price').text[1:])
 

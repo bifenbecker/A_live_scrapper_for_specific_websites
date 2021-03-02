@@ -1,5 +1,6 @@
 import json, requests, re
 from bs4 import BeautifulSoup
+from ExceptionBreak import ExceptionBreak
 
 class IPhone12pro:
 
@@ -64,7 +65,10 @@ class IPhone12pro:
     def getData_BrandNew(self):
         colors = ['Graphite', 'Silver', 'Gold', 'Pacific Blue']
         IPhones = []
-        prices = self.getListPrice()
+        try:
+            prices = self.getListPrice()
+        except:
+            raise ExceptionBreak("Error in Iphone 12 pro")
 
         for i in range(len(self.websites.keys())):
             data = {'brand': 'Apple',

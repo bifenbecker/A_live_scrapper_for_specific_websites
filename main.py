@@ -8,13 +8,19 @@ from IPhone12 import IPhone12
 from IPhone12proMax import IPhone12proMax
 from IPhone11pro import IPhone11pro
 import Script_LiveUpdate
+from ExceptionBreak import ExceptionBreak
 
 
 def main():
-    Script_LiveUpdate.Update()
-    Script_LiveUpdate.SellMyMobile_Price_Json()
+    while True:
+        try:
+            Script_LiveUpdate.Update()
+            Script_LiveUpdate.SellMyMobile_Price_Json()
+        except ExceptionBreak as e:
+            print(e.mes)
+            break
 
-
+        time.sleep(20)
 
 
 

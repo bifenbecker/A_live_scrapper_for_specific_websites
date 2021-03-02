@@ -1,5 +1,6 @@
 import json, requests, re
 from bs4 import BeautifulSoup
+from ExceptionBreak import ExceptionBreak
 
 class IPhone11proMax:
     @staticmethod
@@ -62,7 +63,10 @@ class IPhone11proMax:
     def getData_BrandNew(self):
         colors = ['Gold', 'Green', 'Silver', 'Space gray']
         IPhones = []
-        prices = self.getListPrice_BrandNew()
+        try:
+            prices = self.getListPrice_BrandNew()
+        except:
+            raise ExceptionBreak("Error in Iphone 11 pro Max")
         for i in range(len(self.websites.keys())):
             data = {'brand': 'Apple',
                     'model': 'IPhone11proMax',
@@ -82,7 +86,10 @@ class IPhone11proMax:
 
     def getPrice_MusicMagpie_256gb(self):
         url = self.websites['MusicMagpie256']
-        return self.get_soap(url).find('span', class_ = 'text-heavy xl-font').text
+        try:
+            return self.get_soap(url).find('span', class_='text-heavy xl-font').text
+        except:
+            return self.get_soap('https://www.musicmagpie.co.uk/store/products/apple-iphone-11-pro-max-256gb-gold-unlocked').find('span', class_='text-heavy xl-font').text
 
     def getPrice_ebay_64gb(self):
         url = self.websites['ebay64']
@@ -130,7 +137,11 @@ class IPhone11proMax:
 
     def getPrice_vendi_512gb(self):
         url = self.websites['vendi512']
-        return ''.join(re.findall('\d*|,|.\d', self.get_soap(url).find('span', class_='price').text)).replace(',','')
+        try:
+            return ''.join(re.findall('\d*|,|.\d', self.get_soap(url).find('span', class_='price').text)).replace(',',
+                                                                                                                  '')
+        except:
+            return self.getPrice_OnBuy_512gb()
 
     def getPrice_OnBuy_512gb(self):
         url = self.websites['OnBuy512']
@@ -210,7 +221,11 @@ class IPhone11proMax:
     def getData_Renewed(self):
         colors = ['Gold', 'Green', 'Silver', 'Space gray']
         IPhones = []
-        prices = self.getListPrice_BrandNew()
+        try:
+            prices = self.getListPrice_Renewed()
+        except:
+            raise ExceptionBreak("Error in Iphone 11 pro Max")
+
         for i in range(len(self.websites.keys())):
             data = {'brand': 'Apple',
                     'model': 'IPhone11proMax',

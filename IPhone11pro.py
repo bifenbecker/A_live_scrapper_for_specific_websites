@@ -1,5 +1,6 @@
 import json, requests, re
 from bs4 import BeautifulSoup
+from ExceptionBreak import ExceptionBreak
 
 class IPhone11pro:
     @staticmethod
@@ -70,7 +71,10 @@ class IPhone11pro:
     def getData_BrandNew(self):
         colors = ['Midnight Green', 'Silver', 'Gold', 'Space grey']
         IPhones = []
-        prices = self.getListPrice_BrandNew()
+        try:
+            prices = self.getListPrice_BrandNew()
+        except:
+            raise ExceptionBreak("Error in Iphone11pro")
         for i in range(len(self.websites.keys())):
             data = {'brand': 'Apple',
                     'model': 'IPhone11pro',
@@ -246,6 +250,7 @@ class IPhone11pro:
             self.getPrice_GiffGaff_64gb_r(),
             self.getPrice_ebay_256gb_r(),
             self.getPrice_Amazon_256gb_r(),
+            self.getPrice_MusicMagpie_256gb_r(),
             self.getPrice_GiffGaff_256gb_r(),
             self.getPrice_OnBuy_256gb_r(),
 
@@ -255,8 +260,11 @@ class IPhone11pro:
     def getData_Renewed(self):
         IPhones = []
         colors = ['Midnight Green', 'Silver', 'Gold', 'Space grey']
-        prices = self.getListPrice_BrandNew()
-        for i in range(len(self.websites.keys())):
+        try:
+            prices = self.getList_Renewed()
+        except:
+            raise ExceptionBreak("Error in Iphone11pro")
+        for i in range(len(self.websites_r.keys())):
             data = {'brand': 'Apple',
                     'model': 'IPhone11pro',
                     'condition': 'Renewed',
@@ -273,8 +281,7 @@ class IPhone11pro:
     def getPrice_OnBuy_256gb_r(self):
         url = self.websites_r['OnBuy256']
         try:
-            return self.get_soap(url).find('div', class_='price').text.replace(' ', '').replace('\n', '').replace(',',
-                                                                                                                  '')
+            return self.get_soap(url).find('div', class_='price').text.replace(' ', '').replace('\n', '').replace(',',                                                                                                    '')
         except:
             return self.get_soap(url).find('div', class_='oos-price').text.replace(' ', '').replace('\n', '').replace(',',
                                                                                                                   '')
@@ -284,7 +291,10 @@ class IPhone11pro:
 
     def getPrice_MusicMagpie_256gb_r(self):
         url = self.websites_r['MusicMagpie256']
-        return self.get_soap(url).find('span', class_='text-heavy xl-font').text
+        try:
+            return self.get_soap(url).find('span', class_='text-heavy xl-font').text
+        except:
+            return self.getPrice_OnBuy_256gb_r()
 
 
     def getPrice_Amazon_256gb_r(self):
