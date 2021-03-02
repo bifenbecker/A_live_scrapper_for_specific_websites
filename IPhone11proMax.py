@@ -82,7 +82,10 @@ class IPhone11proMax:
 
     def getPrice_MusicMagpie_256gb(self):
         url = self.websites['MusicMagpie256']
-        return self.get_soap(url).find('span', class_ = 'text-heavy xl-font').text
+        try:
+            return self.get_soap(url).find('span', class_='text-heavy xl-font').text
+        except:
+            return self.get_soap('https://www.musicmagpie.co.uk/store/products/apple-iphone-11-pro-max-256gb-gold-unlocked').find('span', class_='text-heavy xl-font').text
 
     def getPrice_ebay_64gb(self):
         url = self.websites['ebay64']
@@ -130,7 +133,11 @@ class IPhone11proMax:
 
     def getPrice_vendi_512gb(self):
         url = self.websites['vendi512']
-        return ''.join(re.findall('\d*|,|.\d', self.get_soap(url).find('span', class_='price').text)).replace(',','')
+        try:
+            return ''.join(re.findall('\d*|,|.\d', self.get_soap(url).find('span', class_='price').text)).replace(',',
+                                                                                                                  '')
+        except:
+            return self.getPrice_OnBuy_512gb()
 
     def getPrice_OnBuy_512gb(self):
         url = self.websites['OnBuy512']
