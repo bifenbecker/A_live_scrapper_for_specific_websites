@@ -31,43 +31,86 @@ def Update():
     with open("config.txt") as file:
         path = file.readlines()[0]
     with open(path, "w") as write_file:
-        json.dump(data, write_file)
+        json.dump(data, write_file,indent=1)
 
+def GenDict(*args):
+    res = {}
+    for dict in args:
+        for key in dict:
+            res[key] = dict[key]
+    return res
 
+def GetDictPhone(phones,url,flak):
+    domen = 'https://www.sellmymobile.com'
+    soap = BeautifulSoup(requests.get(url).text, 'html.parser')
+    links = soap.find_all('a', class_='cta cta--tertiary')
 
+    res = {}
+    for l in links:
+        a = l.get('href')
+        for i in phones:
+            flag = flak + '-' + i
+            if flag in a:
+                if flak == "ipad-pro":
+                    if flag in a and 'data' not in a:
+                        r = a.split('/')[3].split('-')[:-1]
+                        name = " ".join(r[:3]).title().replace(' ', '') + "-" + "-".join(r[3:])
+                        res[name] = domen + a
+                else:
+                    name = " ".join(a.split('/')[3].split('-')[:-1]).title().replace(' ', '')
+                    res[name] = domen + a
+
+    return res
+
+def getDataForSellMyMobile():
+    url = {
+        'iphone': 'https://www.sellmymobile.com/phones/apple/',
+        'galaxy': 'https://www.sellmymobile.com/phones/samsung/',
+        'ipad-pro': 'https://www.sellmymobile.com/tablets/apple/',
+    }
+    phones = [
+        ['7', '8', 'x', 'xr', 'xs', '11', 'se-2020', '12'],
+        ['s8', 's9', 's10-5g', 's20', 'fold', 'z-fold2'],
+        ['12-9-2018', '11-2018'],
+    ]
+    data = {}
+    for i in range(len(url.keys())):
+        data_n = GetDictPhone(phones[i], url[list(url.keys())[i]], list(url.keys())[i])
+        data = GenDict(data, data_n)
+    data["OnePlus8Pro"] = "https://www.sellmymobile.com/phones/oneplus/8-pro-128gb/"
+    return data
 
 def SellMyMobile_Price_Json():
-    url = {
-        'IPhone11':'https://www.sellmymobile.com/phones/apple/iphone-11-64gb/',
-        'Iphone11pro':'https://www.sellmymobile.com/phones/apple/iphone-11-pro-256gb/',
-        'Iphone11proMax':'https://www.sellmymobile.com/phones/apple/iphone-11-pro-max-64gb/',
-        'Iphone12':'https://www.sellmymobile.com/phones/apple/iphone-12-64gb/',
-        'Iphone12mini:':'https://www.sellmymobile.com/phones/apple/iphone-12-mini-64gb/',
-        'Iphone12pro':'https://www.sellmymobile.com/phones/apple/iphone-12-pro-128gb/',
-        'Iphone12proMax':'https://www.sellmymobile.com/phones/apple/iphone-12-pro-max-128gb/',
-
-    }
-    try:
-        data = {}
-        for key in url:
+    url = getDataForSellMyMobile()
+    data = {}
+    for key in url:
+        try:
             capacities = returnGb(url[key])
-            condition = {'good': {}}
-            data_capacity = {}
-            for capacity in capacities:
-                currentUrl = url[key].replace(re.search(r"\d+gb", url[key]).group(), capacity)
+        except:
+            raise ExceptionBreak(f"Error in {key}(SellMyMobile)")
+        condition = {'good': {}}
+        data_capacity = {}
+        if len(capacities) == 0:
+            try:
+                price = getPrice(url[key])
+            except:
+                raise ExceptionBreak(f"Error in {key}(SellMyMobile)")
+            c = url[key].split("-")[-1][:-1]
+            if c == "fold":
+                c = "512gb"
+            data_capacity[c] = price
+        for capacity in capacities:
+            currentUrl = url[key].replace(re.search(r"\d+gb", url[key]).group(), capacity)
+            try:
                 price = getPrice(currentUrl)
-                data_capacity[capacity] = price
-            condition['good'] = data_capacity
-            data[key] = condition
+            except:
+                raise ExceptionBreak(f"Error in {key}(SellMyMobile)")
+            data_capacity[capacity] = price
+        condition['good'] = data_capacity
+        data[key] = condition
 
-        with open("SellMyMobile.json", "w") as file:
-            json.dump(data, file)
-    except:
-        raise ExceptionBreak("Error in SellMyMobile")
-
-
-
-
+    with open("SellMyMobile.json", "w") as file:
+        json.dump(data, file, indent=2)
 
 def returnGb(url):
     r = requests.get(url).text

@@ -11,16 +11,20 @@ import Script_LiveUpdate
 from ExceptionBreak import ExceptionBreak
 
 
-def main():
-    while True:
-        try:
-            Script_LiveUpdate.Update()
-            Script_LiveUpdate.SellMyMobile_Price_Json()
-        except ExceptionBreak as e:
-            print(e.mes)
-            break
 
-        time.sleep(20)
+def main():
+    # while True:
+    #     try:
+    #         Script_LiveUpdate.Update()
+    #         Script_LiveUpdate.SellMyMobile_Price_Json()
+    #     except ExceptionBreak as e:
+    #         print(e.mes)
+    #         break
+    #     print("Success")
+    #     time.sleep(20)
+
+    Script_LiveUpdate.SellMyMobile_Price_Json()
+
 
 
 
