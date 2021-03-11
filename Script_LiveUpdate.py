@@ -8,7 +8,14 @@ from IPhone11proMax import IPhone11proMax
 from IPhone12 import IPhone12
 from IPhone12proMax import IPhone12proMax
 from IPhone11pro import IPhone11pro
+from fake_useragent import UserAgent
 
+# headers = {'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36'}
+headers = {
+'User-Agent': 'Mozilla/5.0 (Windows NT 6.3; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/72.0.3626.121 Safari/537.36',
+'upgrade-insecure-requests': '1',
+'cookie': 'mos_id=CllGxlx+PS20pAxcIuDnAgA=; session-cookie=158b36ec3ea4f5484054ad1fd21407333c874ef0fa4f0c8e34387efd5464a1e9500e2277b0367d71a273e5b46fa0869a; NSC_WBS-QUBG-jo-nptsv-WT-443=ffffffff0951e23245525d5f4f58455e445a4a423660; rheftjdd=rheftjddVal; _ym_uid=1552395093355938562; _ym_d=1552395093; _ym_isad=2'
+}
 
 def Update():
     iphone11 = IPhone11()
@@ -42,7 +49,7 @@ def GenDict(*args):
 
 def GetDictPhone(phones,url,flak):
     domen = 'https://www.sellmymobile.com'
-    soap = BeautifulSoup(requests.get(url).text, 'html.parser')
+    soap = BeautifulSoup(requests.get(url,headers = headers).text, 'html.parser')
     links = soap.find_all('a', class_='cta cta--tertiary')
 
     res = {}
@@ -82,6 +89,7 @@ def getDataForSellMyMobile():
 
 def SellMyMobile_Price_Json():
     url = getDataForSellMyMobile()
+    url["Galaxy Fold"] = url.pop("Galaxy")
     data = {}
     for key in url:
         try:
@@ -108,17 +116,16 @@ def SellMyMobile_Price_Json():
             data_capacity[capacity] = price
         condition['good'] = data_capacity
         data[key] = condition
-
     with open("SellMyMobile.json", "w") as file:
         json.dump(data, file, indent=2)
 
 def returnGb(url):
-    r = requests.get(url).text
+    r = requests.get(url,headers = headers).text
     soup = BeautifulSoup(r,'html.parser')
     return [n.text.replace('\n','').lower() for n in soup.find_all('li',class_ = 'device-to-results__variant')]
 
 def getPrice(url):
-    r = requests.get(url).text
+    r = requests.get(url,headers = headers).text
     soup = BeautifulSoup(r, 'html.parser')
     return float(soup.find('span', class_='device-results-table__deal-price').text[1:])
 

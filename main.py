@@ -13,14 +13,15 @@ from ExceptionBreak import ExceptionBreak
 
 
 def main():
-    while True:
-        try:
-            Script_LiveUpdate.Update()
-            Script_LiveUpdate.SellMyMobile_Price_Json()
-        except ExceptionBreak as e:
-            print(e.mes)
-            break
-        time.sleep(43200)
+    # while True:
+    #     try:
+    #         Script_LiveUpdate.Update()
+    #         Script_LiveUpdate.SellMyMobile_Price_Json()
+    #     except ExceptionBreak as e:
+    #         print(e.mes)
+    #         break
+    #     time.sleep(43200)
+    Script_LiveUpdate.SellMyMobile_Price_Json()
 
 
 
